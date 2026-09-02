@@ -44,21 +44,21 @@
         // デフォルトデータ定義
         const DEFAULT_DATA = {
             when: [
-                { id: 'w1', title: '2時間目', speech: 'にじかんめ', emoji: '⏰' },
-                { id: 'w2', title: '休み時間', speech: 'やすみじかん', emoji: '⚽' },
-                { id: 'w3', title: '3時間目', speech: 'さんじかんめ', emoji: '⏰' },
-                { id: 'w4', title: '給食の時間', speech: 'きゅうしょくのじかん', emoji: '🍱' },
-                { id: 'w5', title: '昼休み', speech: 'ひるやすみ', emoji: '🛝' },
-                { id: 'w6', title: '掃除の時間', speech: 'そうじのじかん', emoji: '🧹' },
-                { id: 'w7', title: '5時間目', speech: 'ごじかんめ', emoji: '⏰' },
-                { id: 'w8', title: '帰る前の時間', speech: 'かえるまえのじかん', emoji: '🎒' },
-                { id: 'w9', title: '国語の時間', speech: 'こくごのじかん', emoji: '📖' },
-                { id: 'w10', title: '算数の時間', speech: 'さんすうのじかん', emoji: '🔢' },
-                { id: 'w11', title: '図工の時間', speech: 'ずこうのじかん', emoji: '🎨' },
-                { id: 'w12', title: 'せいたんの時間', speech: 'せいたんのじかん', emoji: '🌱' },
-                { id: 'w13', title: '体育の時間', speech: 'たいいくのじかん', emoji: '🏃' },
-                { id: 'w14', title: '音楽の時間', speech: 'おんがくのじかん', emoji: '🎵' },
-                { id: 'w15', title: '学活の時間', speech: 'がっかつのじかん', emoji: '💬' }
+                { id: 'w1', title: '2じかんめ', speech: 'にじかんめ', emoji: '⏰' },
+                { id: 'w2', title: 'やすみじかん', speech: 'やすみじかん', emoji: '⚽' },
+                { id: 'w3', title: '3じかんめ', speech: 'さんじかんめ', emoji: '⏰' },
+                { id: 'w4', title: 'きゅうしょくのじかん', speech: 'きゅうしょくのじかん', emoji: '🍱' },
+                { id: 'w5', title: 'ひるやすみ', speech: 'ひるやすみ', emoji: '🛝' },
+                { id: 'w6', title: 'そうじのじかん', speech: 'そうじのじかん', emoji: '🧹' },
+                { id: 'w7', title: '5じかんめ', speech: 'ごじかんめ', emoji: '⏰' },
+                { id: 'w8', title: 'かえるまえのじかん', speech: 'かえるまえのじかん', emoji: '🎒' },
+                { id: 'w9', title: 'こくごのじかん', speech: 'こくごのじかん', emoji: '📖' },
+                { id: 'w10', title: 'さんすうのじかん', speech: 'さんすうのじかん', emoji: '🔢' },
+                { id: 'w11', title: 'ずこうのじかん', speech: 'ずこうのじかん', emoji: '🎨' },
+                { id: 'w12', title: 'せいたんのじかん', speech: 'せいたんのじかん', emoji: '🌱' },
+                { id: 'w13', title: 'たいいくのじかん', speech: 'たいいくのじかん', emoji: '🏃' },
+                { id: 'w14', title: 'おんがくのじかん', speech: 'おんがくのじかん', emoji: '🎵' },
+                { id: 'w15', title: 'がっかつのじかん', speech: 'がっかつのじかん', emoji: '💬' }
             ],
             where: [
                 { id: 'lh1', title: '教室', speech: 'きょうしつで', emoji: '🏫' },
@@ -104,8 +104,13 @@
         function App() {
             // ステート
             const [cardsData, setCardsData] = useState(() => {
-                const saved = localStorage.getItem('tokushi_app_cards');
-                return saved ? JSON.parse(saved) : DEFAULT_DATA;
+                try {
+                    const saved = localStorage.getItem('tokushi_app_cards');
+                    return saved ? JSON.parse(saved) : DEFAULT_DATA;
+                } catch (e) {
+                    console.error("Failed to load local storage data", e);
+                    return DEFAULT_DATA;
+                }
             });
 
             const [currentStep, setCurrentStep] = useState(0);
@@ -120,6 +125,7 @@
             const [isSettingsOpen, setIsSettingsOpen] = useState(false);
             const [settingsTab, setSettingsTab] = useState('when');
             const [isPlaying, setIsPlaying] = useState(false);
+            const [isProcessing, setIsProcessing] = useState(false); // 画像処理中の判定
             
             // 設定画面用の編集フォーム
             const [newItemTitle, setNewItemTitle] = useState('');
@@ -127,9 +133,13 @@
             const [newItemImage, setNewItemImage] = useState(null);
             const [newItemEmoji, setNewItemEmoji] = useState('🌟');
 
-            // データのローカルストレージ保存
+            // データのローカルストレージ保存（エラーハンドリングを追加）
             useEffect(() => {
-                localStorage.setItem('tokushi_app_cards', JSON.stringify(cardsData));
+                try {
+                    localStorage.setItem('tokushi_app_cards', JSON.stringify(cardsData));
+                } catch (e) {
+                    alert('保存容量がいっぱいです。いくつかの画像を削除してください。');
+                }
             }, [cardsData]);
 
             // 音声読み上げ関数
@@ -187,7 +197,7 @@
             // 新規カード追加
             const handleAddCard = (e) => {
                 e.preventDefault();
-                if (!newItemTitle.trim()) return;
+                if (!newItemTitle.trim() || isProcessing) return;
 
                 const newItem = {
                     id: 'custom_' + Date.now(),
@@ -209,16 +219,51 @@
                 setNewItemEmoji('🌟');
             };
 
-            // 画像アップロード処理
+            // 画像の圧縮・リサイズ処理（フリーズ防止対策）
             const handleImageChange = (e) => {
                 const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onloadend = () => {
-                        setNewItemImage(reader.result);
+                if (!file) return;
+
+                setIsProcessing(true);
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        // 最大400pxにリサイズしてデータ量を劇的に削減
+                        const maxDim = 400;
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > height) {
+                            if (width > maxDim) {
+                                height = Math.round((height * maxDim) / width);
+                                width = maxDim;
+                            }
+                        } else {
+                            if (height > maxDim) {
+                                width = Math.round((width * maxDim) / height);
+                                height = maxDim;
+                            }
+                        }
+
+                        const canvas = document.createElement('canvas');
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        // JPEG形式で圧縮（画質0.7）
+                        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                        setNewItemImage(compressedBase64);
+                        setIsProcessing(false);
                     };
-                    reader.readAsDataURL(file);
-                }
+                    img.onerror = () => {
+                        alert('画像の読み込みに失敗しました。');
+                        setIsProcessing(false);
+                    };
+                    img.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
             };
 
             // 設定リセット
@@ -513,7 +558,11 @@
                                             )}
                                         </div>
 
-                                        {newItemImage && (
+                                        {isProcessing && (
+                                            <div className="text-xs text-amber-600 font-bold mb-2">📷 画像を処理・軽量化しています...</div>
+                                        )}
+
+                                        {newItemImage && !isProcessing && (
                                             <div className="mb-3 flex items-center gap-2">
                                                 <span className="text-xs text-slate-500">プレビュー:</span>
                                                 <img src={newItemImage} alt="preview" className="h-12 w-12 object-cover rounded-lg border" />
@@ -529,7 +578,10 @@
 
                                         <button
                                             type="submit"
-                                            className="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm shadow"
+                                            disabled={isProcessing}
+                                            className={`w-full py-2 text-white font-bold rounded-xl text-sm shadow ${
+                                                isProcessing ? 'bg-slate-400 cursor-not-allowed' : 'bg-emerald-600 hover:bg-emerald-700'
+                                            }`}
                                         >
                                             このカードを追加する
                                         </button>
