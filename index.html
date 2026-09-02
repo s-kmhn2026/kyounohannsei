@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>きょうの はっぴょう（一日の反省）</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <!-- Babel -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body {
+            font-family: 'Hiragino Kaku Gothic ProN', 'メイリオ', sans-serif;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .card-shadow {
+            box-shadow: 0 8px 0 rgba(0, 0, 0, 0.12), 0 4px 10px rgba(0, 0, 0, 0.08);
+        }
+        .card-active {
+            transform: translateY(4px);
+            box-shadow: 0 4px 0 rgba(0, 0, 0, 0.12);
+        }
+        .pulse-animation {
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="bg-amber-50 text-slate-800 min-h-screen">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // デフォルトデータ定義
+        const DEFAULT_DATA = {
+            when: [
+                { id: 'w1', title: '2時間目', speech: 'にじかんめ', emoji: '⏰' },
+                { id: 'w2', title: '休み時間', speech: 'やすみじかん', emoji: '⚽' },
+                { id: 'w3', title: '3時間目', speech: 'さんじかんめ', emoji: '⏰' },
+                { id: 'w4', title: '給食の時間', speech: 'きゅうしょくのじかん', emoji: '🍱' },
+                { id: 'w5', title: '昼休み', speech: 'ひるやすみ', emoji: '🛝' },
+                { id: 'w6', title: '掃除の時間', speech: 'そうじのじかん', emoji: '🧹' },
+                { id: 'w7', title: '5時間目', speech: 'ごじかんめ', emoji: '⏰' },
+                { id: 'w8', title: '帰る前の時間', speech: 'かえるまえのじかん', emoji: '🎒' },
+                { id: 'w9', title: '国語の時間', speech: 'こくごのじかん', emoji: '📖' },
+                { id: 'w10', title: '算数の時間', speech: 'さんすうのじかん', emoji: '🔢' },
+                { id: 'w11', title: '図工の時間', speech: 'ずこうのじかん', emoji: '🎨' },
+                { id: 'w12', title: 'せいたんの時間', speech: 'せいたんのじかん', emoji: '🌱' },
+                { id: 'w13', title: '体育の時間', speech: 'たいいくのじかん', emoji: '🏃' },
+                { id: 'w14', title: '音楽の時間', speech: 'おんがくのじかん', emoji: '🎵' },
+                { id: 'w15', title: '学活の時間', speech: 'がっかつのじかん', emoji: '💬' }
+            ],
+            where: [
+                { id: 'lh1', title: '教室', speech: 'きょうしつで', emoji: '🏫' },
+                { id: 'lh2', title: '体育館', speech: 'たいいくかんで', emoji: '🏀' },
+                { id: 'lh3', title: '運動場', speech: 'うんどうじょうで', emoji: '🏃' },
+                { id: 'lh4', title: '図工室', speech: 'ずこうしつで', emoji: '🎨' },
+                { id: 'lh5', title: '音楽室', speech: 'おんがくしつで', emoji: '🎹' },
+                { id: 'lh6', title: '保健室', speech: 'ほけんしつで', emoji: '🏥' }
+            ],
+            who: [
+                { id: 'wh1', title: '先生と', speech: 'せんせいと', emoji: '👩‍🏫' },
+                { id: 'wh2', title: 'お友達と', speech: 'おともだちと', emoji: '👥' },
+                { id: 'wh3', title: 'みんなで', speech: 'みんなで', emoji: '🙌' },
+                { id: 'wh4', title: '一人で', speech: 'ひとりで', emoji: '👤' }
+            ],
+            what: [
+                { id: 'wt1', title: '勉強をした', speech: 'べんきょうをしました', emoji: '✏️' },
+                { id: 'wt2', title: '運動をした', speech: 'うんどうをしました', emoji: '🏃' },
+                { id: 'wt3', title: '給食を食べた', speech: 'きゅうしょくをたべました', emoji: '🍚' },
+                { id: 'wt4', title: '掃除をした', speech: 'そうじをしました', emoji: '🧹' },
+                { id: 'wt5', title: '遊んだ', speech: 'あそびました', emoji: '🛝' },
+                { id: 'wt6', title: '作品を作った', speech: 'さくひんをつくりました', emoji: '✂️' },
+                { id: 'wt7', title: '歌をうたった', speech: 'うたをうたいました', emoji: '🎤' }
+            ],
+            how: [
+                { id: 'h1', title: '楽しかった', speech: 'たのしかったです！', emoji: '😄' },
+                { id: 'h2', title: '頑張った', speech: 'がんばりました！', emoji: '😤' },
+                { id: 'h3', title: '難しかった', speech: 'むずかしかったです。', emoji: '🤔' },
+                { id: 'h4', title: '上手にできた', speech: 'じょうずにできました！', emoji: '✨' },
+                { id: 'h5', title: '嬉しかった', speech: 'うれしかったです！', emoji: '🥰' }
+            ]
+        };
+
+        const STEPS = [
+            { id: 'when', title: 'いつ？', color: 'bg-rose-500', lightColor: 'bg-rose-100', borderColor: 'border-rose-400' },
+            { id: 'where', title: 'どこで？', color: 'bg-amber-500', lightColor: 'bg-amber-100', borderColor: 'border-amber-400' },
+            { id: 'who', title: 'だれと？', color: 'bg-emerald-500', lightColor: 'bg-emerald-100', borderColor: 'border-emerald-400' },
+            { id: 'what', title: 'なにをした？', color: 'bg-sky-500', lightColor: 'bg-sky-100', borderColor: 'border-sky-400' },
+            { id: 'how', title: 'どうだった？', color: 'bg-indigo-500', lightColor: 'bg-indigo-100', borderColor: 'border-indigo-400' },
+            { id: 'summary', title: 'はっぴょう', color: 'bg-purple-600', lightColor: 'bg-purple-100', borderColor: 'border-purple-400' }
+        ];
+
+        function App() {
+            // ステート
+            const [cardsData, setCardsData] = useState(() => {
+                const saved = localStorage.getItem('tokushi_app_cards');
+                return saved ? JSON.parse(saved) : DEFAULT_DATA;
+            });
+
+            const [currentStep, setCurrentStep] = useState(0);
+            const [selections, setSelections] = useState({
+                when: null,
+                where: null,
+                who: null,
+                what: null,
+                how: null
+            });
+
+            const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+            const [settingsTab, setSettingsTab] = useState('when');
+            const [isPlaying, setIsPlaying] = useState(false);
+            
+            // 設定画面用の編集フォーム
+            const [newItemTitle, setNewItemTitle] = useState('');
+            const [newItemSpeech, setNewItemSpeech] = useState('');
+            const [newItemImage, setNewItemImage] = useState(null);
+            const [newItemEmoji, setNewItemEmoji] = useState('🌟');
+
+            // データのローカルストレージ保存
+            useEffect(() => {
+                localStorage.setItem('tokushi_app_cards', JSON.stringify(cardsData));
+            }, [cardsData]);
+
+            // 音声読み上げ関数
+            const speakText = (text, onEndCallback) => {
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel(); // 前の音声をキャンセル
+                    const uttr = new SpeechSynthesisUtterance(text);
+                    uttr.lang = 'ja-JP';
+                    uttr.rate = 0.85; // 少しゆっくりめで聞き取りやすく
+                    uttr.pitch = 1.0;
+
+                    if (onEndCallback) {
+                        uttr.onend = onEndCallback;
+                        uttr.onerror = onEndCallback;
+                    }
+
+                    window.speechSynthesis.speak(uttr);
+                } else if (onEndCallback) {
+                    onEndCallback();
+                }
+            };
+
+            // カード選択ハンドラ
+            const handleSelectCard = (item) => {
+                const stepId = STEPS[currentStep].id;
+                setSelections(prev => ({ ...prev, [stepId]: item }));
+                
+                // カード単体の音声再生
+                speakText(item.title);
+            };
+
+            // 全体発表の読み上げ
+            const handleFullSpeech = () => {
+                if (isPlaying) return;
+                setIsPlaying(true);
+
+                const { when, where, who, what, how } = selections;
+                const text = `きょうの、${when ? when.speech : ''}、${where ? where.speech : ''}、${who ? who.speech : ''}、${what ? what.speech : ''}。${how ? how.speech : ''}`;
+
+                speakText(text, () => {
+                    setIsPlaying(false);
+                });
+            };
+
+            // カード削除
+            const handleDeleteCard = (category, id) => {
+                if (confirm('このカードをけしますか？')) {
+                    setCardsData(prev => ({
+                        ...prev,
+                        [category]: prev[category].filter(item => item.id !== id)
+                    }));
+                }
+            };
+
+            // 新規カード追加
+            const handleAddCard = (e) => {
+                e.preventDefault();
+                if (!newItemTitle.trim()) return;
+
+                const newItem = {
+                    id: 'custom_' + Date.now(),
+                    title: newItemTitle,
+                    speech: newItemSpeech || newItemTitle,
+                    image: newItemImage,
+                    emoji: newItemImage ? null : (newItemEmoji || '⭐')
+                };
+
+                setCardsData(prev => ({
+                    ...prev,
+                    [settingsTab]: [...prev[settingsTab], newItem]
+                }));
+
+                // フォームリセット
+                setNewItemTitle('');
+                setNewItemSpeech('');
+                setNewItemImage(null);
+                setNewItemEmoji('🌟');
+            };
+
+            // 画像アップロード処理
+            const handleImageChange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                        setNewItemImage(reader.result);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+
+            // 設定リセット
+            const handleResetData = () => {
+                if (confirm('すべてのカードをしょき状態にもどしますか？（追加した画像も削除されます）')) {
+                    setCardsData(DEFAULT_DATA);
+                    localStorage.removeItem('tokushi_app_cards');
+                }
+            };
+
+            // 長押し判定用（設定ボタン保護）
+            const timerRef = useRef(null);
+            const handleTouchStartSettings = () => {
+                timerRef.current = setTimeout(() => {
+                    setIsSettingsOpen(true);
+                }, 1500); // 1.5秒長押しで設定開く
+            };
+            const handleTouchEndSettings = () => {
+                if (timerRef.current) clearTimeout(timerRef.current);
+            };
+
+            const currentStepInfo = STEPS[currentStep];
+
+            return (
+                <div className="flex flex-col h-screen max-w-5xl mx-auto p-4 md:p-6 select-none">
+                    
+                    {/* ヘッダー */}
+                    <header className="flex justify-between items-center mb-4 bg-white p-4 rounded-2xl shadow-sm border border-amber-200">
+                        <div className="flex items-center space-x-2">
+                            <span className="text-3xl">📢</span>
+                            <h1 className="text-2xl font-bold text-slate-800">きょうの はっぴょう</h1>
+                        </div>
+                        
+                        {/* 設定ボタン（長押しでオープン） */}
+                        <button
+                            onMouseDown={handleTouchStartSettings}
+                            onMouseUp={handleTouchEndSettings}
+                            onTouchStart={handleTouchStartSettings}
+                            onTouchEnd={handleTouchEndSettings}
+                            className="bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold px-4 py-2 rounded-xl text-xs flex flex-col items-center border border-slate-300 active:bg-slate-300"
+                        >
+                            <span>⚙️ せんせい用</span>
+                            <span className="text-[10px] text-slate-400">（ながおし）</span>
+                        </button>
+                    </header>
+
+                    {/* ステップバー */}
+                    <div className="grid grid-cols-6 gap-2 mb-4">
+                        {STEPS.map((step, idx) => {
+                            const isCurrent = idx === currentStep;
+                            const isSelected = selections[step.id] || idx === 5;
+                            return (
+                                <button
+                                    key={step.id}
+                                    onClick={() => setCurrentStep(idx)}
+                                    className={`py-2 px-1 rounded-xl text-center transition-all ${
+                                        isCurrent 
+                                            ? `${step.color} text-white font-bold ring-4 ring-amber-300 shadow-md` 
+                                            : isSelected 
+                                                ? 'bg-white text-slate-700 border-2 border-amber-300 font-medium'
+                                                : 'bg-amber-100 text-slate-400 border border-amber-200'
+                                    }`}
+                                >
+                                    <div className="text-xs">STEP {idx + 1}</div>
+                                    <div className="text-sm md:text-base truncate">{step.title}</div>
+                                </button>
+                            );
+                        })}
+                    </div>
+
+                    {/* メインコンテンツエリア */}
+                    <main className="flex-1 bg-white rounded-3xl p-4 md:p-6 shadow-md border-2 border-amber-200 flex flex-col overflow-hidden">
+                        
+                        {/* ステップ別表示 */}
+                        {currentStep < 5 ? (
+                            <div className="flex-1 flex flex-col h-full">
+                                <div className="flex justify-between items-center mb-4">
+                                    <h2 className="text-2xl font-bold flex items-center gap-2">
+                                        <span className={`w-4 h-8 rounded-full ${currentStepInfo.color}`}></span>
+                                        {currentStepInfo.title} えらんでね
+                                    </h2>
+                                    {selections[currentStepInfo.id] && (
+                                        <div className="text-sm bg-emerald-100 text-emerald-800 font-bold px-3 py-1 rounded-full border border-emerald-300">
+                                            えらんだ：{selections[currentStepInfo.id].title}
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* カードグリッド（スクロール可能） */}
+                                <div className="flex-1 overflow-y-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 p-2">
+                                    {cardsData[currentStepInfo.id]?.map((item) => {
+                                        const isSelected = selections[currentStepInfo.id]?.id === item.id;
+                                        return (
+                                            <button
+                                                key={item.id}
+                                                onClick={() => handleSelectCard(item)}
+                                                className={`flex flex-col items-center justify-center p-4 rounded-2xl transition-all border-4 text-center cursor-pointer min-h-[130px] ${
+                                                    isSelected
+                                                        ? `${currentStepInfo.lightColor} ${currentStepInfo.borderColor} border-4 card-active scale-95 ring-4 ring-amber-400`
+                                                        : 'bg-white border-slate-200 hover:border-amber-300 card-shadow active:scale-95'
+                                                }`}
+                                            >
+                                                {item.image ? (
+                                                    <img src={item.image} alt={item.title} className="h-16 w-16 object-cover rounded-xl mb-2" />
+                                                ) : (
+                                                    <span className="text-4xl mb-2">{item.emoji || '⭐'}</span>
+                                                )}
+                                                <span className="font-bold text-lg text-slate-800 leading-snug">{item.title}</span>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        ) : (
+                            /* STEP 6: 発表・まとめ画面 */
+                            <div className="flex-1 flex flex-col justify-between h-full overflow-y-auto">
+                                <div>
+                                    <h2 className="text-2xl font-bold mb-4 text-center text-purple-900">
+                                        ✨ きょうの はっピょう ✨
+                                    </h2>
+
+                                    {/* 選択したカード一覧表示 */}
+                                    <div className="grid grid-cols-1 sm:grid-cols-5 gap-3 mb-6">
+                                        {STEPS.slice(0, 5).map((step) => {
+                                            const item = selections[step.id];
+                                            return (
+                                                <div 
+                                                    key={step.id} 
+                                                    onClick={() => {
+                                                        const idx = STEPS.findIndex(s => s.id === step.id);
+                                                        setCurrentStep(idx);
+                                                    }}
+                                                    className={`p-3 rounded-2xl border-2 flex flex-col items-center text-center cursor-pointer ${
+                                                        item ? `${step.lightColor} ${step.borderColor}` : 'bg-slate-50 border-dashed border-slate-300'
+                                                    }`}
+                                                >
+                                                    <span className="text-xs text-slate-500 font-bold mb-1">{step.title}</span>
+                                                    {item ? (
+                                                        <>
+                                                            {item.image ? (
+                                                                <img src={item.image} alt={item.title} className="h-10 w-10 object-cover rounded-lg mb-1" />
+                                                            ) : (
+                                                                <span className="text-2xl mb-1">{item.emoji || '⭐'}</span>
+                                                            )}
+                                                            <span className="font-bold text-sm text-slate-800">{item.title}</span>
+                                                        </>
+                                                    ) : (
+                                                        <span className="text-xs text-slate-400 my-auto py-2">（えらんでない）</span>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+
+                                    {/* 文章プレビュー */}
+                                    <div className="bg-amber-50 p-6 rounded-2xl border-2 border-amber-200 text-xl sm:text-2xl font-bold leading-relaxed text-slate-800 text-center shadow-inner">
+                                        「きょうの、
+                                        <span className="text-rose-600 underline underline-offset-4 decoration-2">{selections.when?.speech || '＿＿'}</span>、
+                                        <span className="text-amber-600 underline underline-offset-4 decoration-2">{selections.where?.speech || '＿＿'}</span>、
+                                        <span className="text-emerald-600 underline underline-offset-4 decoration-2">{selections.who?.speech || '＿＿'}</span>、
+                                        <span className="text-sky-600 underline underline-offset-4 decoration-2">{selections.what?.speech || '＿＿'}</span>。
+                                        <span className="text-indigo-600 underline underline-offset-4 decoration-2">{selections.how?.speech || '＿＿'}</span>」
+                                    </div>
+                                </div>
+
+                                {/* 大音量発表ボタン */}
+                                <div className="mt-6 flex justify-center">
+                                    <button
+                                        onClick={handleFullSpeech}
+                                        disabled={isPlaying}
+                                        className={`w-full max-w-md py-5 px-8 rounded-3xl font-extrabold text-2xl text-white shadow-lg flex items-center justify-center gap-3 transition-transform active:scale-95 ${
+                                            isPlaying 
+                                                ? 'bg-purple-400 cursor-not-allowed pulse-animation' 
+                                                : 'bg-purple-600 hover:bg-purple-700 card-shadow'
+                                        }`}
+                                    >
+                                        <span className="text-4xl">🔊</span>
+                                        <span>{isPlaying ? 'はっぴょう してい ます...' : 'おおきな こえで はっぴょう！'}</span>
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* ナビゲーションボタン */}
+                        <div className="flex justify-between items-center mt-4 pt-4 border-t border-slate-100">
+                            <button
+                                onClick={() => setCurrentStep(prev => Math.max(0, prev - 1))}
+                                disabled={currentStep === 0}
+                                className={`px-6 py-3 rounded-2xl font-bold text-lg ${
+                                    currentStep === 0 
+                                        ? 'bg-slate-100 text-slate-300 cursor-not-allowed' 
+                                        : 'bg-slate-200 text-slate-700 hover:bg-slate-300 active:scale-95'
+                                }`}
+                            >
+                                ⬅️ まえへ
+                            </button>
+
+                            {currentStep < 5 && (
+                                <button
+                                    onClick={() => setCurrentStep(prev => Math.min(5, prev + 1))}
+                                    className="px-8 py-3 rounded-2xl font-bold text-lg bg-amber-500 hover:bg-amber-600 text-white card-shadow active:scale-95 flex items-center gap-2"
+                                >
+                                    <span>つぎへ</span>
+                                    <span>➡️</span>
+                                </button>
+                            )}
+                        </div>
+                    </main>
+
+                    {/* 教員用設定モーダル */}
+                    {isSettingsOpen && (
+                        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+                            <div className="bg-white rounded-3xl max-w-3xl w-full max-h-[90vh] flex flex-col p-6 shadow-2xl">
+                                <div className="flex justify-between items-center mb-4 border-b pb-3">
+                                    <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+                                        <span>⚙️</span> カードの かんり・追加 (せんせい用)
+                                    </h3>
+                                    <button 
+                                        onClick={() => setIsSettingsOpen(false)}
+                                        className="text-slate-400 hover:text-slate-600 font-bold text-2xl px-3 py-1"
+                                    >
+                                        ✕
+                                    </button>
+                                </div>
+
+                                {/* カテゴリ切り替えタブ */}
+                                <div className="flex gap-2 mb-4 overflow-x-auto pb-1">
+                                    {STEPS.slice(0, 5).map(step => (
+                                        <button
+                                            key={step.id}
+                                            onClick={() => setSettingsTab(step.id)}
+                                            className={`px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap ${
+                                                settingsTab === step.id 
+                                                    ? `${step.color} text-white` 
+                                                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                                            }`}
+                                        >
+                                            {step.title}
+                                        </button>
+                                    ))}
+                                </div>
+
+                                <div className="flex-1 overflow-y-auto pr-2 space-y-6">
+                                    {/* 追加フォーム */}
+                                    <form onSubmit={handleAddCard} className="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                                        <h4 className="font-bold text-slate-700 mb-3 text-sm">➕ あたらしいカードを追加</h4>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                                            <div>
+                                                <label className="block text-xs font-bold text-slate-500 mb-1">ひょうじ用のもじ (例: ２時間目)</label>
+                                                <input
+                                                    type="text"
+                                                    value={newItemTitle}
+                                                    onChange={e => setNewItemTitle(e.target.value)}
+                                                    required
+                                                    className="w-full p-2 border rounded-xl text-sm"
+                                                    placeholder="カードに表示する文字"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-bold text-slate-500 mb-1">よみあげ用の文字 (例: にじかんめ)</label>
+                                                <input
+                                                    type="text"
+                                                    value={newItemSpeech}
+                                                    onChange={e => setNewItemSpeech(e.target.value)}
+                                                    className="w-full p-2 border rounded-xl text-sm"
+                                                    placeholder="音声で話す文字（空欄なら表示文字と同じ）"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                                            <div>
+                                                <label className="block text-xs font-bold text-slate-500 mb-1">しゃしん・画像を選ぶ (iPadから)</label>
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    onChange={handleImageChange}
+                                                    className="w-full text-xs text-slate-500 file:mr-2 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-amber-100 file:text-amber-700 hover:file:bg-amber-200"
+                                                />
+                                            </div>
+                                            {!newItemImage && (
+                                                <div>
+                                                    <label className="block text-xs font-bold text-slate-500 mb-1">絵文字（画像がない場合）</label>
+                                                    <input
+                                                        type="text"
+                                                        value={newItemEmoji}
+                                                        onChange={e => setNewItemEmoji(e.target.value)}
+                                                        className="w-full p-2 border rounded-xl text-sm"
+                                                        placeholder="絵文字1つ"
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {newItemImage && (
+                                            <div className="mb-3 flex items-center gap-2">
+                                                <span className="text-xs text-slate-500">プレビュー:</span>
+                                                <img src={newItemImage} alt="preview" className="h-12 w-12 object-cover rounded-lg border" />
+                                                <button 
+                                                    type="button" 
+                                                    onClick={() => setNewItemImage(null)}
+                                                    className="text-xs text-red-500 underline"
+                                                >
+                                                    画像をけす
+                                                </button>
+                                            </div>
+                                        )}
+
+                                        <button
+                                            type="submit"
+                                            className="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm shadow"
+                                        >
+                                            このカードを追加する
+                                        </button>
+                                    </form>
+
+                                    {/* 既存カード一覧・削除 */}
+                                    <div>
+                                        <h4 className="font-bold text-slate-700 mb-2 text-sm">登録されているカード一覧</h4>
+                                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                            {cardsData[settingsTab]?.map(item => (
+                                                <div key={item.id} className="p-2 border rounded-xl flex items-center justify-between bg-white text-xs">
+                                                    <div className="flex items-center gap-2 truncate pr-1">
+                                                        {item.image ? (
+                                                            <img src={item.image} alt={item.title} className="w-8 h-8 object-cover rounded" />
+                                                        ) : (
+                                                            <span className="text-base">{item.emoji || '⭐'}</span>
+                                                        )}
+                                                        <span className="font-bold truncate">{item.title}</span>
+                                                    </div>
+                                                    <button
+                                                        onClick={() => handleDeleteCard(settingsTab, item.id)}
+                                                        className="text-red-500 hover:text-red-700 p-1 font-bold"
+                                                    >
+                                                        🗑️
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="mt-4 pt-3 border-t flex justify-between items-center">
+                                    <button
+                                        onClick={handleResetData}
+                                        className="text-xs text-red-500 underline hover:text-red-700"
+                                    >
+                                        初期設定にもどす
+                                    </button>
+                                    <button
+                                        onClick={() => setIsSettingsOpen(false)}
+                                        className="px-6 py-2 bg-slate-700 text-white font-bold rounded-xl text-sm"
+                                    >
+                                        閉じる
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                </div>
+            );
+        }
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+</body>
+</html>
