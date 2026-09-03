@@ -41,7 +41,7 @@
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
-        // デフォルトデータ定義（すべてひらがな表記・数字保持）
+        // デフォルトデータ定義（すべてひらがな・数字表記）
         const DEFAULT_DATA = {
             when: [
                 { id: 'w1', title: '2じかんめ', speech: 'にじかんめ', emoji: '⏰' },
@@ -69,7 +69,7 @@
                 { id: 'lh6', title: 'ほけんしつ', speech: 'ほけんしつで', emoji: '🏥' }
             ],
             who: [
-                { id: 'wh1', title: 'せんせいと', speech: 'せんせいと', emoji: '👩' },
+                { id: 'wh1', title: 'せんせいと', speech: 'せんせいと', emoji: '👩‍🏫' },
                 { id: 'wh2', title: 'おともだちと', speech: 'おともだちと', emoji: '👥' },
                 { id: 'wh3', title: 'みんなで', speech: 'みんなで', emoji: '🙌' },
                 { id: 'wh4', title: 'ひとりで', speech: 'ひとりで', emoji: '👤' }
@@ -93,12 +93,12 @@
         };
 
         const STEPS = [
-            { id: 'when', title: 'いつ？', color: 'bg-rose-500', lightColor: 'bg-rose-100', borderColor: 'border-rose-400' },
-            { id: 'where', title: 'どこで？', color: 'bg-amber-500', lightColor: 'bg-amber-100', borderColor: 'border-amber-400' },
-            { id: 'who', title: 'だれと？', color: 'bg-emerald-500', lightColor: 'bg-emerald-100', borderColor: 'border-emerald-400' },
-            { id: 'what', title: 'なにをした？', color: 'bg-sky-500', lightColor: 'bg-sky-100', borderColor: 'border-sky-400' },
-            { id: 'how', title: 'どうだった？', color: 'bg-indigo-500', lightColor: 'bg-indigo-100', borderColor: 'border-indigo-400' },
-            { id: 'summary', title: 'はっぴょう', color: 'bg-purple-600', lightColor: 'bg-purple-100', borderColor: 'border-purple-400' }
+            { id: 'when', title: 'いつ？', speech: 'いつ', color: 'bg-rose-500', lightColor: 'bg-rose-100', borderColor: 'border-rose-400' },
+            { id: 'where', title: 'どこで？', speech: 'どこで', color: 'bg-amber-500', lightColor: 'bg-amber-100', borderColor: 'border-amber-400' },
+            { id: 'who', title: 'だれと？', speech: 'だれと', color: 'bg-emerald-500', lightColor: 'bg-emerald-100', borderColor: 'border-emerald-400' },
+            { id: 'what', title: 'なにをした？', speech: 'なにをした', color: 'bg-sky-500', lightColor: 'bg-sky-100', borderColor: 'border-sky-400' },
+            { id: 'how', title: 'どうだった？', speech: 'どうだった', color: 'bg-indigo-500', lightColor: 'bg-indigo-100', borderColor: 'border-indigo-400' },
+            { id: 'summary', title: 'はっぴょう', speech: 'はっぴょう', color: 'bg-purple-600', lightColor: 'bg-purple-100', borderColor: 'border-purple-400' }
         ];
 
         function App() {
@@ -107,7 +107,6 @@
                     const saved = localStorage.getItem('tokushi_app_cards_v2');
                     return saved ? JSON.parse(saved) : DEFAULT_DATA;
                 } catch (e) {
-                    console.error("Failed to load local storage data", e);
                     return DEFAULT_DATA;
                 }
             });
@@ -125,22 +124,22 @@
             const [settingsTab, setSettingsTab] = useState('when');
             const [isPlaying, setIsPlaying] = useState(false);
             const [isProcessing, setIsProcessing] = useState(false);
+            
+            // 自作通知・確認ダイアログ用のステート
+            const [dialogState, setDialogState] = useState({ open: false, title: '', message: '', type: 'info', onConfirm: null });
 
-            // アプリ内通知・確認モーダルステート
-            const [noticeMessage, setNoticeMessage] = useState(null);
-            const [confirmDialog, setConfirmDialog] = useState(null);
-
-            // 設定編集フォーム
+            // 編集フォームのステート
             const [newItemTitle, setNewItemTitle] = useState('');
             const [newItemSpeech, setNewItemSpeech] = useState('');
             const [newItemImage, setNewItemImage] = useState(null);
             const [newItemEmoji, setNewItemEmoji] = useState('🌟');
 
+            // データ保存
             useEffect(() => {
                 try {
                     localStorage.setItem('tokushi_app_cards_v2', JSON.stringify(cardsData));
                 } catch (e) {
-                    setNoticeMessage('ほぞんりょうりょうが いっぱいです。いくつかの しゃしんを けしてください。');
+                    showDialog('ほぞん エラー', '画像が大きすぎるため保存できませんでした。いくつかの画像を消してください。', 'alert');
                 }
             }, [cardsData]);
 
@@ -163,6 +162,15 @@
                 }
             };
 
+            // ステップ移動と音声発声を統一制御するハンドラ
+            const handleStepChange = (targetIdx) => {
+                const nextIdx = Math.max(0, Math.min(5, targetIdx));
+                setCurrentStep(nextIdx);
+                if (STEPS[nextIdx]) {
+                    speakText(STEPS[nextIdx].speech);
+                }
+            };
+
             const handleSelectCard = (item) => {
                 const stepId = STEPS[currentStep].id;
                 setSelections(prev => ({ ...prev, [stepId]: item }));
@@ -181,16 +189,16 @@
                 });
             };
 
+            const showDialog = (title, message, type = 'info', onConfirm = null) => {
+                setDialogState({ open: true, title, message, type, onConfirm });
+            };
+
             const handleDeleteCard = (category, id) => {
-                setConfirmDialog({
-                    message: 'この カードを けしますか？',
-                    onConfirm: () => {
-                        setCardsData(prev => ({
-                            ...prev,
-                            [category]: prev[category].filter(item => item.id !== id)
-                        }));
-                        setConfirmDialog(null);
-                    }
+                showDialog('かくにん', 'このカードを けしますか？', 'confirm', () => {
+                    setCardsData(prev => ({
+                        ...prev,
+                        [category]: prev[category].filter(item => item.id !== id)
+                    }));
                 });
             };
 
@@ -253,7 +261,7 @@
                         setIsProcessing(false);
                     };
                     img.onerror = () => {
-                        setNoticeMessage('しゃしんの よみこみに しっぱい しました。');
+                        showDialog('エラー', '画像をよみこめませんでした。', 'alert');
                         setIsProcessing(false);
                     };
                     img.src = event.target.result;
@@ -262,13 +270,9 @@
             };
 
             const handleResetData = () => {
-                setConfirmDialog({
-                    message: 'すべての カードを しょきじょうたいに もどしますか？（ついきかした しゃしんも けえます）',
-                    onConfirm: () => {
-                        setCardsData(DEFAULT_DATA);
-                        localStorage.removeItem('tokushi_app_cards_v2');
-                        setConfirmDialog(null);
-                    }
+                showDialog('かくにん', 'すべてのカードを さいしょの状態にもどしますか？', 'confirm', () => {
+                    setCardsData(DEFAULT_DATA);
+                    localStorage.removeItem('tokushi_app_cards_v2');
                 });
             };
 
@@ -276,7 +280,7 @@
             const handleTouchStartSettings = () => {
                 timerRef.current = setTimeout(() => {
                     setIsSettingsOpen(true);
-                }, 1200);
+                }, 1500);
             };
             const handleTouchEndSettings = () => {
                 if (timerRef.current) clearTimeout(timerRef.current);
@@ -299,14 +303,14 @@
                             onMouseUp={handleTouchEndSettings}
                             onTouchStart={handleTouchStartSettings}
                             onTouchEnd={handleTouchEndSettings}
-                            className="bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold px-4 py-2 rounded-xl text-xs flex flex-col items-center border border-slate-300 active:bg-slate-300"
+                            className="bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold px-4 py-2 rounded-xl text-xs flex flex-col items-center border border-slate-300 active:bg-slate-300"
                         >
                             <span>⚙️ せんせい用</span>
                             <span className="text-[10px] text-slate-400">（ながおし）</span>
                         </button>
                     </header>
 
-                    {/* ステップバー */}
+                    {/* ステップバー（クリック時に名称を音声発声） */}
                     <div className="grid grid-cols-6 gap-2 mb-4">
                         {STEPS.map((step, idx) => {
                             const isCurrent = idx === currentStep;
@@ -314,7 +318,7 @@
                             return (
                                 <button
                                     key={step.id}
-                                    onClick={() => setCurrentStep(idx)}
+                                    onClick={() => handleStepChange(idx)}
                                     className={`py-2 px-1 rounded-xl text-center transition-all ${
                                         isCurrent 
                                             ? `${step.color} text-white font-bold ring-4 ring-amber-300 shadow-md` 
@@ -347,6 +351,7 @@
                                     )}
                                 </div>
 
+                                {/* カードグリッド */}
                                 <div className="flex-1 overflow-y-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 p-2">
                                     {cardsData[currentStepInfo.id]?.map((item) => {
                                         const isSelected = selections[currentStepInfo.id]?.id === item.id;
@@ -372,7 +377,7 @@
                                 </div>
                             </div>
                         ) : (
-                            /* 発表・まとめ画面 */
+                            /* STEP 6: 発表画面 */
                             <div className="flex-1 flex flex-col justify-between h-full overflow-y-auto">
                                 <div>
                                     <h2 className="text-2xl font-bold mb-4 text-center text-purple-900">
@@ -387,7 +392,7 @@
                                                     key={step.id} 
                                                     onClick={() => {
                                                         const idx = STEPS.findIndex(s => s.id === step.id);
-                                                        setCurrentStep(idx);
+                                                        handleStepChange(idx);
                                                     }}
                                                     className={`p-3 rounded-2xl border-2 flex flex-col items-center text-center cursor-pointer ${
                                                         item ? `${step.lightColor} ${step.borderColor}` : 'bg-slate-50 border-dashed border-slate-300'
@@ -438,10 +443,10 @@
                             </div>
                         )}
 
-                        {/* ナビゲーション */}
+                        {/* ナビゲーションボタン（移動時にステップ名を音声再生） */}
                         <div className="flex justify-between items-center mt-4 pt-4 border-t border-slate-100">
                             <button
-                                onClick={() => setCurrentStep(prev => Math.max(0, prev - 1))}
+                                onClick={() => handleStepChange(currentStep - 1)}
                                 disabled={currentStep === 0}
                                 className={`px-6 py-3 rounded-2xl font-bold text-lg ${
                                     currentStep === 0 
@@ -454,7 +459,7 @@
 
                             {currentStep < 5 && (
                                 <button
-                                    onClick={() => setCurrentStep(prev => Math.min(5, prev + 1))}
+                                    onClick={() => handleStepChange(currentStep + 1)}
                                     className="px-8 py-3 rounded-2xl font-bold text-lg bg-amber-500 hover:bg-amber-600 text-white card-shadow active:scale-95 flex items-center gap-2"
                                 >
                                     <span>つぎへ</span>
@@ -619,39 +624,39 @@
                         </div>
                     )}
 
-                    {/* お知らせダイアログ */}
-                    {noticeMessage && (
-                        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
-                            <div className="bg-white p-6 rounded-2xl max-w-sm w-full text-center shadow-xl border-2 border-amber-300">
-                                <p className="text-slate-800 font-bold mb-4">{noticeMessage}</p>
-                                <button
-                                    onClick={() => setNoticeMessage(null)}
-                                    className="px-6 py-2 bg-amber-500 text-white font-bold rounded-xl shadow hover:bg-amber-600"
-                                >
-                                    わかった
-                                </button>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* 確認ダイアログ */}
-                    {confirmDialog && (
-                        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
-                            <div className="bg-white p-6 rounded-2xl max-w-sm w-full text-center shadow-xl border-2 border-slate-300">
-                                <p className="text-slate-800 font-bold mb-6">{confirmDialog.message}</p>
-                                <div className="flex justify-center gap-4">
-                                    <button
-                                        onClick={() => setConfirmDialog(null)}
-                                        className="px-5 py-2 bg-slate-200 text-slate-700 font-bold rounded-xl hover:bg-slate-300"
-                                    >
-                                        やめる
-                                    </button>
-                                    <button
-                                        onClick={confirmDialog.onConfirm}
-                                        className="px-5 py-2 bg-red-600 text-white font-bold rounded-xl shadow hover:bg-red-700"
-                                    >
-                                        けす
-                                    </button>
+                    {/* カスタム確認・おしらせモーダル（alert/confirm代替） */}
+                    {dialogState.open && (
+                        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-[60]">
+                            <div className="bg-white rounded-2xl p-6 max-w-sm w-full text-center shadow-2xl border-2 border-amber-300">
+                                <h3 className="text-lg font-bold mb-2 text-slate-800">{dialogState.title}</h3>
+                                <p className="text-sm text-slate-600 mb-6">{dialogState.message}</p>
+                                <div className="flex justify-center gap-3">
+                                    {dialogState.type === 'confirm' ? (
+                                        <>
+                                            <button
+                                                onClick={() => setDialogState({ ...dialogState, open: false })}
+                                                className="px-4 py-2 bg-slate-200 text-slate-700 font-bold rounded-xl text-sm"
+                                            >
+                                                やめる
+                                            </button>
+                                            <button
+                                                onClick={() => {
+                                                    if (dialogState.onConfirm) dialogState.onConfirm();
+                                                    setDialogState({ ...dialogState, open: false });
+                                                }}
+                                                className="px-4 py-2 bg-red-500 text-white font-bold rounded-xl text-sm shadow"
+                                            >
+                                                OK
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <button
+                                            onClick={() => setDialogState({ ...dialogState, open: false })}
+                                            className="px-6 py-2 bg-amber-500 text-white font-bold rounded-xl text-sm shadow"
+                                        >
+                                            OK
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         </div>
