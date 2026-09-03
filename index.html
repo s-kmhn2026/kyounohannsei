@@ -41,54 +41,53 @@
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
-        // デフォルトデータ定義（すべてひらがな・数字表記）
         const DEFAULT_DATA = {
             when: [
-                { id: 'w1', title: '2じかんめ', speech: 'にじかんめ', emoji: '⏰' },
-                { id: 'w2', title: 'やすみじかん', speech: 'やすみじかん', emoji: '⚽' },
-                { id: 'w3', title: '3じかんめ', speech: 'さんじかんめ', emoji: '⏰' },
-                { id: 'w4', title: 'きゅうしょくのじかん', speech: 'きゅうしょくのじかん', emoji: '🍱' },
-                { id: 'w5', title: 'ひるやすみ', speech: 'ひるやすみ', emoji: '🛝' },
-                { id: 'w6', title: 'そうじのじかん', speech: 'そうじのじかん', emoji: '🧹' },
-                { id: 'w7', title: '5じかんめ', speech: 'ごじかんめ', emoji: '⏰' },
-                { id: 'w8', title: 'かえるまえのじかん', speech: 'かえるまえのじかん', emoji: '🎒' },
-                { id: 'w9', title: 'こくごのじかん', speech: 'こくごのじかん', emoji: '📖' },
-                { id: 'w10', title: 'さんすうのじかん', speech: 'さんすうのじかん', emoji: '🔢' },
-                { id: 'w11', title: 'ずこうのじかん', speech: 'ずこうのじかん', emoji: '🎨' },
-                { id: 'w12', title: 'せいたんのじかん', speech: 'せいたんのじかん', emoji: '🌱' },
-                { id: 'w13', title: 'たいいくのじかん', speech: 'たいいくのじかん', emoji: '🏃' },
-                { id: 'w14', title: 'おんがくのじかん', speech: 'おんがくのじかん', emoji: '🎵' },
-                { id: 'w15', title: 'がっかつのじかん', speech: 'がっかつのじかん', emoji: '💬' }
+                { id: 'w1', title: '2じかんめ', speech: 'にじかんめ', emoji: '⏰', enabled: true },
+                { id: 'w2', title: 'やすみじかん', speech: 'やすみじかん', emoji: '⚽', enabled: true },
+                { id: 'w3', title: '3じかんめ', speech: 'さんじかんめ', emoji: '⏰', enabled: true },
+                { id: 'w4', title: 'きゅうしょくのじかん', speech: 'きゅうしょくのじかん', emoji: '🍱', enabled: true },
+                { id: 'w5', title: 'ひるやすみ', speech: 'ひるやすみ', emoji: '🛝', enabled: true },
+                { id: 'w6', title: 'そうじのじかん', speech: 'そうじのじかん', emoji: '🧹', enabled: true },
+                { id: 'w7', title: '5じかんめ', speech: 'ごじかんめ', emoji: '⏰', enabled: true },
+                { id: 'w8', title: 'かえるまえのじかん', speech: 'かえるまえのじかん', emoji: '🎒', enabled: true },
+                { id: 'w9', title: 'こくごのじかん', speech: 'こくごのじかん', emoji: '📖', enabled: true },
+                { id: 'w10', title: 'さんすうのじかん', speech: 'さんすうのじかん', emoji: '🔢', enabled: true },
+                { id: 'w11', title: 'ずこうのじかん', speech: 'ずこうのじかん', emoji: '🎨', enabled: true },
+                { id: 'w12', title: 'せいたんのじかん', speech: 'せいたんのじかん', emoji: '🌱', enabled: true },
+                { id: 'w13', title: 'たいいくのじかん', speech: 'たいいくのじかん', emoji: '🏃', enabled: true },
+                { id: 'w14', title: 'おんがくのじかん', speech: 'おんがくのじかん', emoji: '🎵', enabled: true },
+                { id: 'w15', title: 'がっかつのじかん', speech: 'がっかつのじかん', emoji: '💬', enabled: true }
             ],
             where: [
-                { id: 'lh1', title: 'きょうしつ', speech: 'きょうしつで', emoji: '🏫' },
-                { id: 'lh2', title: 'たいいくかん', speech: 'たいいくかんで', emoji: '🏀' },
-                { id: 'lh3', title: 'うんどうじょう', speech: 'うんどうじょうで', emoji: '🏃' },
-                { id: 'lh4', title: 'ずこうしつ', speech: 'ずこうしつで', emoji: '🎨' },
-                { id: 'lh5', title: 'おんがくしつ', speech: 'おんがくしつで', emoji: '🎹' },
-                { id: 'lh6', title: 'ほけんしつ', speech: 'ほけんしつで', emoji: '🏥' }
+                { id: 'lh1', title: 'きょうしつ', speech: 'きょうしつで', emoji: '🏫', enabled: true },
+                { id: 'lh2', title: 'たいいくかん', speech: 'たいいくかんで', emoji: '🏀', enabled: true },
+                { id: 'lh3', title: 'うんどうじょう', speech: 'うんどうじょうで', emoji: '🏃', enabled: true },
+                { id: 'lh4', title: 'ずこうしつ', speech: 'ずこうしつで', emoji: '🎨', enabled: true },
+                { id: 'lh5', title: 'おんがくしつ', speech: 'おんがくしつで', emoji: '🎹', enabled: true },
+                { id: 'lh6', title: 'ほけんしつ', speech: 'ほけんしつで', emoji: '🏥', enabled: true }
             ],
             who: [
-                { id: 'wh1', title: 'せんせいと', speech: 'せんせいと', emoji: '👩‍🏫' },
-                { id: 'wh2', title: 'おともだちと', speech: 'おともだちと', emoji: '👥' },
-                { id: 'wh3', title: 'みんなで', speech: 'みんなで', emoji: '🙌' },
-                { id: 'wh4', title: 'ひとりで', speech: 'ひとりで', emoji: '👤' }
+                { id: 'wh1', title: 'せんせいと', speech: 'せんせいと', emoji: '👩‍🏫', enabled: true },
+                { id: 'wh2', title: 'おともだちと', speech: 'おともだちと', emoji: '👥', enabled: true },
+                { id: 'wh3', title: 'みんなで', speech: 'みんなで', emoji: '🙌', enabled: true },
+                { id: 'wh4', title: 'ひとりで', speech: 'ひとりで', emoji: '👤', enabled: true }
             ],
             what: [
-                { id: 'wt1', title: 'べんきょうをした', speech: 'べんきょうをしました', emoji: '✏️' },
-                { id: 'wt2', title: 'うんどうをした', speech: 'うんどうをしました', emoji: '🏃' },
-                { id: 'wt3', title: 'きゅうしょくをたべた', speech: 'きゅうしょくをたべました', emoji: '🍚' },
-                { id: 'wt4', title: 'そうじをした', speech: 'そうじをしました', emoji: '🧹' },
-                { id: 'wt5', title: 'あそんだ', speech: 'あそびました', emoji: '🛝' },
-                { id: 'wt6', title: 'さくひんをつくった', speech: 'さくひんをつくりました', emoji: '✂️' },
-                { id: 'wt7', title: 'うたをうたった', speech: 'うたをうたいました', emoji: '🎤' }
+                { id: 'wt1', title: 'べんきょうをした', speech: 'べんきょうをしました', emoji: '✏️', enabled: true },
+                { id: 'wt2', title: 'うんどうをした', speech: 'うんどうをしました', emoji: '🏃', enabled: true },
+                { id: 'wt3', title: 'きゅうしょくをたべた', speech: 'きゅうしょくをたべました', emoji: '🍚', enabled: true },
+                { id: 'wt4', title: 'そうじをした', speech: 'そうじをしました', emoji: '🧹', enabled: true },
+                { id: 'wt5', title: 'あそんだ', speech: 'あそびました', emoji: '🛝', enabled: true },
+                { id: 'wt6', title: 'さくひんをつくった', speech: 'さくひんをつくりました', emoji: '✂️', enabled: true },
+                { id: 'wt7', title: 'うたをうたった', speech: 'うたをうたいました', emoji: '🎤', enabled: true }
             ],
             how: [
-                { id: 'h1', title: 'たのしかった', speech: 'たのしかったです！', emoji: '😄' },
-                { id: 'h2', title: 'がんばった', speech: 'がんばりました！', emoji: '😤' },
-                { id: 'h3', title: 'むずかしかった', speech: 'むずかしかったです。', emoji: '🤔' },
-                { id: 'h4', title: 'じょうずにできた', speech: 'じょうずにできました！', emoji: '✨' },
-                { id: 'h5', title: 'うれしかった', speech: 'うれしかったです！', emoji: '🥰' }
+                { id: 'h1', title: 'たのしかった', speech: 'たのしかったです！', emoji: '😄', enabled: true },
+                { id: 'h2', title: 'がんばった', speech: 'がんばりました！', emoji: '😤', enabled: true },
+                { id: 'h3', title: 'むずかしかった', speech: 'むずかしかったです。', emoji: '🤔', enabled: true },
+                { id: 'h4', title: 'じょうずにできた', speech: 'じょうずにできました！', emoji: '✨', enabled: true },
+                { id: 'h5', title: 'うれしかった', speech: 'うれしかったです！', emoji: '🥰', enabled: true }
             ]
         };
 
@@ -104,7 +103,7 @@
         function App() {
             const [cardsData, setCardsData] = useState(() => {
                 try {
-                    const saved = localStorage.getItem('tokushi_app_cards_v2');
+                    const saved = localStorage.getItem('tokushi_app_cards_v3');
                     return saved ? JSON.parse(saved) : DEFAULT_DATA;
                 } catch (e) {
                     return DEFAULT_DATA;
@@ -125,10 +124,14 @@
             const [isPlaying, setIsPlaying] = useState(false);
             const [isProcessing, setIsProcessing] = useState(false);
             
-            // 自作通知・確認ダイアログ用のステート
+            // えにっき画像表示用ステート
+            const [exportedImage, setExportedImage] = useState(null);
+            const [isExporting, setIsExporting] = useState(false);
+
+            // ダイアログ状態
             const [dialogState, setDialogState] = useState({ open: false, title: '', message: '', type: 'info', onConfirm: null });
 
-            // 編集フォームのステート
+            // 編集フォーム状態
             const [newItemTitle, setNewItemTitle] = useState('');
             const [newItemSpeech, setNewItemSpeech] = useState('');
             const [newItemImage, setNewItemImage] = useState(null);
@@ -137,7 +140,7 @@
             // データ保存
             useEffect(() => {
                 try {
-                    localStorage.setItem('tokushi_app_cards_v2', JSON.stringify(cardsData));
+                    localStorage.setItem('tokushi_app_cards_v3', JSON.stringify(cardsData));
                 } catch (e) {
                     showDialog('ほぞん エラー', '画像が大きすぎるため保存できませんでした。いくつかの画像を消してください。', 'alert');
                 }
@@ -162,7 +165,7 @@
                 }
             };
 
-            // ステップ移動と音声発声を統一制御するハンドラ
+            // ステップ切り替え時にステップ名を自動発声
             const handleStepChange = (targetIdx) => {
                 const nextIdx = Math.max(0, Math.min(5, targetIdx));
                 setCurrentStep(nextIdx);
@@ -202,6 +205,16 @@
                 });
             };
 
+            // カード表示/非表示（絞り込み）トグル
+            const handleToggleCardEnabled = (category, id) => {
+                setCardsData(prev => ({
+                    ...prev,
+                    [category]: prev[category].map(item => 
+                        item.id === id ? { ...item, enabled: item.enabled === false ? true : false } : item
+                    )
+                }));
+            };
+
             const handleAddCard = (e) => {
                 e.preventDefault();
                 if (!newItemTitle.trim() || isProcessing) return;
@@ -211,7 +224,8 @@
                     title: newItemTitle,
                     speech: newItemSpeech || newItemTitle,
                     image: newItemImage,
-                    emoji: newItemImage ? null : (newItemEmoji || '⭐')
+                    emoji: newItemImage ? null : (newItemEmoji || '⭐'),
+                    enabled: true
                 };
 
                 setCardsData(prev => ({
@@ -225,6 +239,7 @@
                 setNewItemEmoji('🌟');
             };
 
+            // 画像の圧縮リサイズ
             const handleImageChange = (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
@@ -272,8 +287,142 @@
             const handleResetData = () => {
                 showDialog('かくにん', 'すべてのカードを さいしょの状態にもどしますか？', 'confirm', () => {
                     setCardsData(DEFAULT_DATA);
-                    localStorage.removeItem('tokushi_app_cards_v2');
+                    localStorage.removeItem('tokushi_app_cards_v3');
                 });
+            };
+
+            const handleGenerateImage = async () => {
+                setIsExporting(true);
+                try {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 1000;
+                    canvas.height = 750;
+                    const ctx = canvas.getContext('2d');
+
+                    // 背景
+                    ctx.fillStyle = '#fffbeb';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                    // 枠線
+                    ctx.strokeStyle = '#fcd34d';
+                    ctx.lineWidth = 12;
+                    ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
+
+                    // タイトル & 日付
+                    const today = new Date();
+                    const dateStr = `${today.getFullYear()}ねん ${today.getMonth() + 1}がつ ${today.getDate()}にち`;
+
+                    ctx.fillStyle = '#581c87';
+                    ctx.font = 'bold 38px "Hiragino Kaku Gothic ProN", sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('✨ きょうの はっぴょう ✨', canvas.width / 2, 80);
+
+                    ctx.fillStyle = '#78350f';
+                    ctx.font = 'bold 22px "Hiragino Kaku Gothic ProN", sans-serif';
+                    ctx.fillText(dateStr, canvas.width / 2, 120);
+
+                    // 5ステップカード描画
+                    const cardWidth = 160;
+                    const cardHeight = 220;
+                    const startX = 60;
+                    const gap = 20;
+                    const startY = 160;
+
+                    const loadImg = (src) => new Promise((resolve) => {
+                        if (!src) return resolve(null);
+                        const img = new Image();
+                        img.onload = () => resolve(img);
+                        img.onerror = () => resolve(null);
+                        img.src = src;
+                    });
+
+                    const activeSelections = STEPS.slice(0, 5).map(step => ({
+                        step,
+                        item: selections[step.id]
+                    }));
+
+                    const loadedImages = await Promise.all(
+                        activeSelections.map(s => s.item?.image ? loadImg(s.item.image) : Promise.resolve(null))
+                    );
+
+                    activeSelections.forEach(({ step, item }, idx) => {
+                        const x = startX + idx * (cardWidth + gap);
+                        const y = startY;
+
+                        ctx.fillStyle = '#ffffff';
+                        ctx.beginPath();
+                        if (ctx.roundRect) ctx.roundRect(x, y, cardWidth, cardHeight, 16);
+                        else ctx.rect(x, y, cardWidth, cardHeight);
+                        ctx.fill();
+                        ctx.strokeStyle = '#e2e8f0';
+                        ctx.lineWidth = 3;
+                        ctx.stroke();
+
+                        ctx.fillStyle = '#64748b';
+                        ctx.font = 'bold 18px "Hiragino Kaku Gothic ProN", sans-serif';
+                        ctx.textAlign = 'center';
+                        ctx.fillText(step.title, x + cardWidth / 2, y + 28);
+
+                        if (item) {
+                            const img = loadedImages[idx];
+                            if (img) {
+                                ctx.drawImage(img, x + (cardWidth - 110) / 2, y + 36, 110, 110);
+                            } else {
+                                ctx.font = '50px sans-serif';
+                                ctx.fillText(item.emoji || '⭐', x + cardWidth / 2, y + 105);
+                            }
+
+                            ctx.fillStyle = '#1e293b';
+                            ctx.font = 'bold 20px "Hiragino Kaku Gothic ProN", sans-serif';
+                            const title = item.title;
+                            if (title.length > 7) {
+                                ctx.fillText(title.slice(0, 7), x + cardWidth / 2, y + 172);
+                                ctx.fillText(title.slice(7), x + cardWidth / 2, y + 198);
+                            } else {
+                                ctx.fillText(title, x + cardWidth / 2, y + 185);
+                            }
+                        } else {
+                            ctx.fillStyle = '#cbd5e1';
+                            ctx.font = '16px "Hiragino Kaku Gothic ProN", sans-serif';
+                            ctx.fillText('（なし）', x + cardWidth / 2, y + 120);
+                        }
+                    });
+
+                    // 文章枠
+                    const boxY = 420;
+                    const boxWidth = 880;
+                    const boxHeight = 240;
+                    const boxX = 60;
+
+                    ctx.fillStyle = '#fff7ed';
+                    ctx.beginPath();
+                    if (ctx.roundRect) ctx.roundRect(boxX, boxY, boxWidth, boxHeight, 24);
+                    else ctx.rect(boxX, boxY, boxWidth, boxHeight);
+                    ctx.fill();
+                    ctx.strokeStyle = '#fde68a';
+                    ctx.lineWidth = 4;
+                    ctx.stroke();
+
+                    const { when, where, who, what, how } = selections;
+                    const text1 = `「きょうの、${when ? when.speech : '＿＿'}、${where ? where.speech : '＿＿'}、`;
+                    const text2 = `${who ? who.speech : '＿＿'}、${what ? what.speech : '＿＿'}。`;
+                    const text3 = `${how ? how.speech : '＿＿'}」`;
+
+                    ctx.fillStyle = '#1e293b';
+                    ctx.font = 'bold 26px "Hiragino Kaku Gothic ProN", sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(text1, canvas.width / 2, boxY + 70);
+                    ctx.fillText(text2, canvas.width / 2, boxY + 130);
+                    ctx.fillText(text3, canvas.width / 2, boxY + 190);
+
+                    const dataUrl = canvas.toDataURL('image/png');
+                    setExportedImage(dataUrl);
+                } catch (err) {
+                    console.error(err);
+                    showDialog('エラー', '画像の作成に失敗しました。', 'alert');
+                } finally {
+                    setIsExporting(false);
+                }
             };
 
             const timerRef = useRef(null);
@@ -310,7 +459,7 @@
                         </button>
                     </header>
 
-                    {/* ステップバー（クリック時に名称を音声発声） */}
+                    {/* ステップバー（タップ時にタイトル音声再生） */}
                     <div className="grid grid-cols-6 gap-2 mb-4">
                         {STEPS.map((step, idx) => {
                             const isCurrent = idx === currentStep;
@@ -334,7 +483,7 @@
                         })}
                     </div>
 
-                    {/* メインコンテンツエリア */}
+                    {/* メインエリア */}
                     <main className="flex-1 bg-white rounded-3xl p-4 md:p-6 shadow-md border-2 border-amber-200 flex flex-col overflow-hidden">
                         
                         {currentStep < 5 ? (
@@ -353,22 +502,22 @@
 
                                 {/* カードグリッド */}
                                 <div className="flex-1 overflow-y-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 p-2">
-                                    {cardsData[currentStepInfo.id]?.map((item) => {
+                                    {cardsData[currentStepInfo.id]?.filter(item => item.enabled !== false).map((item) => {
                                         const isSelected = selections[currentStepInfo.id]?.id === item.id;
                                         return (
                                             <button
                                                 key={item.id}
                                                 onClick={() => handleSelectCard(item)}
-                                                className={`flex flex-col items-center justify-center p-4 rounded-2xl transition-all border-4 text-center cursor-pointer min-h-[130px] ${
+                                                className={`flex flex-col items-center justify-center p-3 rounded-2xl transition-all border-4 text-center cursor-pointer min-h-[155px] ${
                                                     isSelected
                                                         ? `${currentStepInfo.lightColor} ${currentStepInfo.borderColor} border-4 card-active scale-95 ring-4 ring-amber-400`
                                                         : 'bg-white border-slate-200 hover:border-amber-300 card-shadow active:scale-95'
                                                 }`}
                                             >
                                                 {item.image ? (
-                                                    <img src={item.image} alt={item.title} className="h-16 w-16 object-cover rounded-xl mb-2" />
+                                                    <img src={item.image} alt={item.title} className="h-20 w-20 sm:h-24 sm:w-24 object-cover rounded-xl mb-2 shadow-sm border border-slate-100" />
                                                 ) : (
-                                                    <span className="text-4xl mb-2">{item.emoji || '⭐'}</span>
+                                                    <span className="text-4xl sm:text-5xl mb-2">{item.emoji || '⭐'}</span>
                                                 )}
                                                 <span className="font-bold text-lg text-slate-800 leading-snug">{item.title}</span>
                                             </button>
@@ -377,12 +526,22 @@
                                 </div>
                             </div>
                         ) : (
-                            /* STEP 6: 発表画面 */
                             <div className="flex-1 flex flex-col justify-between h-full overflow-y-auto">
+                                {/* STEP 6: 発表画面 */}
                                 <div>
-                                    <h2 className="text-2xl font-bold mb-4 text-center text-purple-900">
-                                        ✨ きょうの はっぴょう ✨
-                                    </h2>
+                                    <div className="flex justify-between items-center mb-4 px-2">
+                                        <h2 className="text-2xl font-bold text-purple-900">
+                                            ✨ きょうの はっぴょう ✨
+                                        </h2>
+                                        <button
+                                            onClick={handleGenerateImage}
+                                            disabled={isExporting}
+                                            className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-2xl text-sm shadow flex items-center gap-2 transition-transform active:scale-95"
+                                        >
+                                            <span>📷</span>
+                                            <span>{isExporting ? 'さくせい中...' : 'えにっき画像をほぞん'}</span>
+                                        </button>
+                                    </div>
 
                                     <div className="grid grid-cols-1 sm:grid-cols-5 gap-3 mb-6">
                                         {STEPS.slice(0, 5).map((step) => {
@@ -402,7 +561,7 @@
                                                     {item ? (
                                                         <>
                                                             {item.image ? (
-                                                                <img src={item.image} alt={item.title} className="h-10 w-10 object-cover rounded-lg mb-1" />
+                                                                <img src={item.image} alt={item.title} className="h-14 w-14 object-cover rounded-xl mb-1 shadow-sm border border-slate-200" />
                                                             ) : (
                                                                 <span className="text-2xl mb-1">{item.emoji || '⭐'}</span>
                                                             )}
@@ -443,7 +602,7 @@
                             </div>
                         )}
 
-                        {/* ナビゲーションボタン（移動時にステップ名を音声再生） */}
+                        {/* ナビゲーションボタン */}
                         <div className="flex justify-between items-center mt-4 pt-4 border-t border-slate-100">
                             <button
                                 onClick={() => handleStepChange(currentStep - 1)}
@@ -469,7 +628,6 @@
                         </div>
                     </main>
 
-                    {/* 教員用設定モーダル */}
                     {isSettingsOpen && (
                         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
                             <div className="bg-white rounded-3xl max-w-3xl w-full max-h-[90vh] flex flex-col p-6 shadow-2xl">
@@ -582,19 +740,28 @@
                                     </form>
 
                                     <div>
-                                        <h4 className="font-bold text-slate-700 mb-2 text-sm">登録されているカード一覧</h4>
-                                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                        <h4 className="font-bold text-slate-700 mb-2 text-sm">登録されているカード一覧（チェックを外すとひょうじされません）</h4>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                             {cardsData[settingsTab]?.map(item => (
                                                 <div key={item.id} className="p-2 border rounded-xl flex items-center justify-between bg-white text-xs">
                                                     <div className="flex items-center gap-2 truncate pr-1">
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={item.enabled !== false}
+                                                            onChange={() => handleToggleCardEnabled(settingsTab, item.id)}
+                                                            className="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500 cursor-pointer"
+                                                        />
                                                         {item.image ? (
                                                             <img src={item.image} alt={item.title} className="w-8 h-8 object-cover rounded" />
                                                         ) : (
                                                             <span className="text-base">{item.emoji || '⭐'}</span>
                                                         )}
-                                                        <span className="font-bold truncate">{item.title}</span>
+                                                        <span className={`font-bold truncate ${item.enabled === false ? 'line-through text-slate-300' : 'text-slate-700'}`}>
+                                                            {item.title}
+                                                        </span>
                                                     </div>
                                                     <button
+                                                        type="button"
                                                         onClick={() => handleDeleteCard(settingsTab, item.id)}
                                                         className="text-red-500 hover:text-red-700 p-1 font-bold"
                                                     >
@@ -608,12 +775,14 @@
 
                                 <div className="mt-4 pt-3 border-t flex justify-between items-center">
                                     <button
+                                        type="button"
                                         onClick={handleResetData}
                                         className="text-xs text-red-500 underline hover:text-red-700"
                                     >
                                         初期設定にもどす
                                     </button>
                                     <button
+                                        type="button"
                                         onClick={() => setIsSettingsOpen(false)}
                                         className="px-6 py-2 bg-slate-700 text-white font-bold rounded-xl text-sm"
                                     >
@@ -624,9 +793,38 @@
                         </div>
                     )}
 
-                    {/* カスタム確認・おしらせモーダル（alert/confirm代替） */}
+                    {/* 絵日記画像プレビューモーダル */}
+                    {exportedImage && (
+                        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-[70]">
+                            <div className="bg-white rounded-3xl max-w-2xl w-full p-5 flex flex-col items-center shadow-2xl">
+                                <h3 className="text-lg font-bold text-slate-800 mb-2">📸 きょうの えにっき画像</h3>
+                                <p className="text-xs text-slate-500 mb-3">画像をながおし、または下のボタンでiPadに保存できます。</p>
+                                
+                                <img src={exportedImage} alt="えにっき" className="w-full h-auto max-h-[60vh] object-contain rounded-2xl border shadow-md mb-4" />
+                                
+                                <div className="flex gap-3">
+                                    <a
+                                        href={exportedImage}
+                                        download="kyou_no_happyou.png"
+                                        className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm shadow flex items-center gap-2"
+                                    >
+                                        <span>💾</span>
+                                        <span>ダウンロードして保存</span>
+                                    </a>
+                                    <button
+                                        onClick={() => setExportedImage(null)}
+                                        className="px-6 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl text-sm"
+                                    >
+                                        閉じる
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* カスタム確認・おしらせモーダル */}
                     {dialogState.open && (
-                        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-[60]">
+                        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-[80]">
                             <div className="bg-white rounded-2xl p-6 max-w-sm w-full text-center shadow-2xl border-2 border-amber-300">
                                 <h3 className="text-lg font-bold mb-2 text-slate-800">{dialogState.title}</h3>
                                 <p className="text-sm text-slate-600 mb-6">{dialogState.message}</p>
