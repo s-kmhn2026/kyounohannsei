@@ -9,7 +9,7 @@
     <!-- React & ReactDOM -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-    <!-- Babel -->
+    <!-- Babel Standalone -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
         body {
@@ -41,7 +41,7 @@
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
-        // デフォルトデータ定義
+        // デフォルトデータ定義（すべてひらがな表記・数字保持）
         const DEFAULT_DATA = {
             when: [
                 { id: 'w1', title: '2じかんめ', speech: 'にじかんめ', emoji: '⏰' },
@@ -61,34 +61,34 @@
                 { id: 'w15', title: 'がっかつのじかん', speech: 'がっかつのじかん', emoji: '💬' }
             ],
             where: [
-                { id: 'lh1', title: '教室', speech: 'きょうしつで', emoji: '🏫' },
-                { id: 'lh2', title: '体育館', speech: 'たいいくかんで', emoji: '🏀' },
-                { id: 'lh3', title: '運動場', speech: 'うんどうじょうで', emoji: '🏃' },
-                { id: 'lh4', title: '図工室', speech: 'ずこうしつで', emoji: '🎨' },
-                { id: 'lh5', title: '音楽室', speech: 'おんがくしつで', emoji: '🎹' },
-                { id: 'lh6', title: '保健室', speech: 'ほけんしつで', emoji: '🏥' }
+                { id: 'lh1', title: 'きょうしつ', speech: 'きょうしつで', emoji: '🏫' },
+                { id: 'lh2', title: 'たいいくかん', speech: 'たいいくかんで', emoji: '🏀' },
+                { id: 'lh3', title: 'うんどうじょう', speech: 'うんどうじょうで', emoji: '🏃' },
+                { id: 'lh4', title: 'ずこうしつ', speech: 'ずこうしつで', emoji: '🎨' },
+                { id: 'lh5', title: 'おんがくしつ', speech: 'おんがくしつで', emoji: '🎹' },
+                { id: 'lh6', title: 'ほけんしつ', speech: 'ほけんしつで', emoji: '🏥' }
             ],
             who: [
-                { id: 'wh1', title: '先生と', speech: 'せんせいと', emoji: '👩‍🏫' },
-                { id: 'wh2', title: 'お友達と', speech: 'おともだちと', emoji: '👥' },
+                { id: 'wh1', title: 'せんせいと', speech: 'せんせいと', emoji: '👩' },
+                { id: 'wh2', title: 'おともだちと', speech: 'おともだちと', emoji: '👥' },
                 { id: 'wh3', title: 'みんなで', speech: 'みんなで', emoji: '🙌' },
-                { id: 'wh4', title: '一人で', speech: 'ひとりで', emoji: '👤' }
+                { id: 'wh4', title: 'ひとりで', speech: 'ひとりで', emoji: '👤' }
             ],
             what: [
-                { id: 'wt1', title: '勉強をした', speech: 'べんきょうをしました', emoji: '✏️' },
-                { id: 'wt2', title: '運動をした', speech: 'うんどうをしました', emoji: '🏃' },
-                { id: 'wt3', title: '給食を食べた', speech: 'きゅうしょくをたべました', emoji: '🍚' },
-                { id: 'wt4', title: '掃除をした', speech: 'そうじをしました', emoji: '🧹' },
-                { id: 'wt5', title: '遊んだ', speech: 'あそびました', emoji: '🛝' },
-                { id: 'wt6', title: '作品を作った', speech: 'さくひんをつくりました', emoji: '✂️' },
-                { id: 'wt7', title: '歌をうたった', speech: 'うたをうたいました', emoji: '🎤' }
+                { id: 'wt1', title: 'べんきょうをした', speech: 'べんきょうをしました', emoji: '✏️' },
+                { id: 'wt2', title: 'うんどうをした', speech: 'うんどうをしました', emoji: '🏃' },
+                { id: 'wt3', title: 'きゅうしょくをたべた', speech: 'きゅうしょくをたべました', emoji: '🍚' },
+                { id: 'wt4', title: 'そうじをした', speech: 'そうじをしました', emoji: '🧹' },
+                { id: 'wt5', title: 'あそんだ', speech: 'あそびました', emoji: '🛝' },
+                { id: 'wt6', title: 'さくひんをつくった', speech: 'さくひんをつくりました', emoji: '✂️' },
+                { id: 'wt7', title: 'うたをうたった', speech: 'うたをうたいました', emoji: '🎤' }
             ],
             how: [
-                { id: 'h1', title: '楽しかった', speech: 'たのしかったです！', emoji: '😄' },
-                { id: 'h2', title: '頑張った', speech: 'がんばりました！', emoji: '😤' },
-                { id: 'h3', title: '難しかった', speech: 'むずかしかったです。', emoji: '🤔' },
-                { id: 'h4', title: '上手にできた', speech: 'じょうずにできました！', emoji: '✨' },
-                { id: 'h5', title: '嬉しかった', speech: 'うれしかったです！', emoji: '🥰' }
+                { id: 'h1', title: 'たのしかった', speech: 'たのしかったです！', emoji: '😄' },
+                { id: 'h2', title: 'がんばった', speech: 'がんばりました！', emoji: '😤' },
+                { id: 'h3', title: 'むずかしかった', speech: 'むずかしかったです。', emoji: '🤔' },
+                { id: 'h4', title: 'じょうずにできた', speech: 'じょうずにできました！', emoji: '✨' },
+                { id: 'h5', title: 'うれしかった', speech: 'うれしかったです！', emoji: '🥰' }
             ]
         };
 
@@ -102,10 +102,9 @@
         ];
 
         function App() {
-            // ステート
             const [cardsData, setCardsData] = useState(() => {
                 try {
-                    const saved = localStorage.getItem('tokushi_app_cards');
+                    const saved = localStorage.getItem('tokushi_app_cards_v2');
                     return saved ? JSON.parse(saved) : DEFAULT_DATA;
                 } catch (e) {
                     console.error("Failed to load local storage data", e);
@@ -125,30 +124,32 @@
             const [isSettingsOpen, setIsSettingsOpen] = useState(false);
             const [settingsTab, setSettingsTab] = useState('when');
             const [isPlaying, setIsPlaying] = useState(false);
-            const [isProcessing, setIsProcessing] = useState(false); // 画像処理中の判定
-            
-            // 設定画面用の編集フォーム
+            const [isProcessing, setIsProcessing] = useState(false);
+
+            // アプリ内通知・確認モーダルステート
+            const [noticeMessage, setNoticeMessage] = useState(null);
+            const [confirmDialog, setConfirmDialog] = useState(null);
+
+            // 設定編集フォーム
             const [newItemTitle, setNewItemTitle] = useState('');
             const [newItemSpeech, setNewItemSpeech] = useState('');
             const [newItemImage, setNewItemImage] = useState(null);
             const [newItemEmoji, setNewItemEmoji] = useState('🌟');
 
-            // データのローカルストレージ保存（エラーハンドリングを追加）
             useEffect(() => {
                 try {
-                    localStorage.setItem('tokushi_app_cards', JSON.stringify(cardsData));
+                    localStorage.setItem('tokushi_app_cards_v2', JSON.stringify(cardsData));
                 } catch (e) {
-                    alert('保存容量がいっぱいです。いくつかの画像を削除してください。');
+                    setNoticeMessage('ほぞんりょうりょうが いっぱいです。いくつかの しゃしんを けしてください。');
                 }
             }, [cardsData]);
 
-            // 音声読み上げ関数
             const speakText = (text, onEndCallback) => {
                 if ('speechSynthesis' in window) {
-                    window.speechSynthesis.cancel(); // 前の音声をキャンセル
+                    window.speechSynthesis.cancel();
                     const uttr = new SpeechSynthesisUtterance(text);
                     uttr.lang = 'ja-JP';
-                    uttr.rate = 0.85; // 少しゆっくりめで聞き取りやすく
+                    uttr.rate = 0.85;
                     uttr.pitch = 1.0;
 
                     if (onEndCallback) {
@@ -162,16 +163,12 @@
                 }
             };
 
-            // カード選択ハンドラ
             const handleSelectCard = (item) => {
                 const stepId = STEPS[currentStep].id;
                 setSelections(prev => ({ ...prev, [stepId]: item }));
-                
-                // カード単体の音声再生
                 speakText(item.title);
             };
 
-            // 全体発表の読み上げ
             const handleFullSpeech = () => {
                 if (isPlaying) return;
                 setIsPlaying(true);
@@ -184,17 +181,19 @@
                 });
             };
 
-            // カード削除
             const handleDeleteCard = (category, id) => {
-                if (confirm('このカードをけしますか？')) {
-                    setCardsData(prev => ({
-                        ...prev,
-                        [category]: prev[category].filter(item => item.id !== id)
-                    }));
-                }
+                setConfirmDialog({
+                    message: 'この カードを けしますか？',
+                    onConfirm: () => {
+                        setCardsData(prev => ({
+                            ...prev,
+                            [category]: prev[category].filter(item => item.id !== id)
+                        }));
+                        setConfirmDialog(null);
+                    }
+                });
             };
 
-            // 新規カード追加
             const handleAddCard = (e) => {
                 e.preventDefault();
                 if (!newItemTitle.trim() || isProcessing) return;
@@ -212,14 +211,12 @@
                     [settingsTab]: [...prev[settingsTab], newItem]
                 }));
 
-                // フォームリセット
                 setNewItemTitle('');
                 setNewItemSpeech('');
                 setNewItemImage(null);
                 setNewItemEmoji('🌟');
             };
 
-            // 画像の圧縮・リサイズ処理（フリーズ防止対策）
             const handleImageChange = (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
@@ -229,7 +226,6 @@
                 reader.onload = (event) => {
                     const img = new Image();
                     img.onload = () => {
-                        // 最大400pxにリサイズしてデータ量を劇的に削減
                         const maxDim = 400;
                         let width = img.width;
                         let height = img.height;
@@ -252,13 +248,12 @@
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, width, height);
 
-                        // JPEG形式で圧縮（画質0.7）
                         const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
                         setNewItemImage(compressedBase64);
                         setIsProcessing(false);
                     };
                     img.onerror = () => {
-                        alert('画像の読み込みに失敗しました。');
+                        setNoticeMessage('しゃしんの よみこみに しっぱい しました。');
                         setIsProcessing(false);
                     };
                     img.src = event.target.result;
@@ -266,20 +261,22 @@
                 reader.readAsDataURL(file);
             };
 
-            // 設定リセット
             const handleResetData = () => {
-                if (confirm('すべてのカードをしょき状態にもどしますか？（追加した画像も削除されます）')) {
-                    setCardsData(DEFAULT_DATA);
-                    localStorage.removeItem('tokushi_app_cards');
-                }
+                setConfirmDialog({
+                    message: 'すべての カードを しょきじょうたいに もどしますか？（ついきかした しゃしんも けえます）',
+                    onConfirm: () => {
+                        setCardsData(DEFAULT_DATA);
+                        localStorage.removeItem('tokushi_app_cards_v2');
+                        setConfirmDialog(null);
+                    }
+                });
             };
 
-            // 長押し判定用（設定ボタン保護）
             const timerRef = useRef(null);
             const handleTouchStartSettings = () => {
                 timerRef.current = setTimeout(() => {
                     setIsSettingsOpen(true);
-                }, 1500); // 1.5秒長押しで設定開く
+                }, 1200);
             };
             const handleTouchEndSettings = () => {
                 if (timerRef.current) clearTimeout(timerRef.current);
@@ -297,13 +294,12 @@
                             <h1 className="text-2xl font-bold text-slate-800">きょうの はっぴょう</h1>
                         </div>
                         
-                        {/* 設定ボタン（長押しでオープン） */}
                         <button
                             onMouseDown={handleTouchStartSettings}
                             onMouseUp={handleTouchEndSettings}
                             onTouchStart={handleTouchStartSettings}
                             onTouchEnd={handleTouchEndSettings}
-                            className="bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold px-4 py-2 rounded-xl text-xs flex flex-col items-center border border-slate-300 active:bg-slate-300"
+                            className="bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold px-4 py-2 rounded-xl text-xs flex flex-col items-center border border-slate-300 active:bg-slate-300"
                         >
                             <span>⚙️ せんせい用</span>
                             <span className="text-[10px] text-slate-400">（ながおし）</span>
@@ -337,7 +333,6 @@
                     {/* メインコンテンツエリア */}
                     <main className="flex-1 bg-white rounded-3xl p-4 md:p-6 shadow-md border-2 border-amber-200 flex flex-col overflow-hidden">
                         
-                        {/* ステップ別表示 */}
                         {currentStep < 5 ? (
                             <div className="flex-1 flex flex-col h-full">
                                 <div className="flex justify-between items-center mb-4">
@@ -352,7 +347,6 @@
                                     )}
                                 </div>
 
-                                {/* カードグリッド（スクロール可能） */}
                                 <div className="flex-1 overflow-y-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 p-2">
                                     {cardsData[currentStepInfo.id]?.map((item) => {
                                         const isSelected = selections[currentStepInfo.id]?.id === item.id;
@@ -378,14 +372,13 @@
                                 </div>
                             </div>
                         ) : (
-                            /* STEP 6: 発表・まとめ画面 */
+                            /* 発表・まとめ画面 */
                             <div className="flex-1 flex flex-col justify-between h-full overflow-y-auto">
                                 <div>
                                     <h2 className="text-2xl font-bold mb-4 text-center text-purple-900">
-                                        ✨ きょうの はっピょう ✨
+                                        ✨ きょうの はっぴょう ✨
                                     </h2>
 
-                                    {/* 選択したカード一覧表示 */}
                                     <div className="grid grid-cols-1 sm:grid-cols-5 gap-3 mb-6">
                                         {STEPS.slice(0, 5).map((step) => {
                                             const item = selections[step.id];
@@ -418,7 +411,6 @@
                                         })}
                                     </div>
 
-                                    {/* 文章プレビュー */}
                                     <div className="bg-amber-50 p-6 rounded-2xl border-2 border-amber-200 text-xl sm:text-2xl font-bold leading-relaxed text-slate-800 text-center shadow-inner">
                                         「きょうの、
                                         <span className="text-rose-600 underline underline-offset-4 decoration-2">{selections.when?.speech || '＿＿'}</span>、
@@ -429,7 +421,6 @@
                                     </div>
                                 </div>
 
-                                {/* 大音量発表ボタン */}
                                 <div className="mt-6 flex justify-center">
                                     <button
                                         onClick={handleFullSpeech}
@@ -447,7 +438,7 @@
                             </div>
                         )}
 
-                        {/* ナビゲーションボタン */}
+                        {/* ナビゲーション */}
                         <div className="flex justify-between items-center mt-4 pt-4 border-t border-slate-100">
                             <button
                                 onClick={() => setCurrentStep(prev => Math.max(0, prev - 1))}
@@ -489,7 +480,6 @@
                                     </button>
                                 </div>
 
-                                {/* カテゴリ切り替えタブ */}
                                 <div className="flex gap-2 mb-4 overflow-x-auto pb-1">
                                     {STEPS.slice(0, 5).map(step => (
                                         <button
@@ -507,12 +497,11 @@
                                 </div>
 
                                 <div className="flex-1 overflow-y-auto pr-2 space-y-6">
-                                    {/* 追加フォーム */}
                                     <form onSubmit={handleAddCard} className="bg-slate-50 p-4 rounded-2xl border border-slate-200">
                                         <h4 className="font-bold text-slate-700 mb-3 text-sm">➕ あたらしいカードを追加</h4>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
                                             <div>
-                                                <label className="block text-xs font-bold text-slate-500 mb-1">ひょうじ用のもじ (例: ２時間目)</label>
+                                                <label className="block text-xs font-bold text-slate-500 mb-1">ひょうじ用のもじ (例: 2じかんめ)</label>
                                                 <input
                                                     type="text"
                                                     value={newItemTitle}
@@ -587,7 +576,6 @@
                                         </button>
                                     </form>
 
-                                    {/* 既存カード一覧・削除 */}
                                     <div>
                                         <h4 className="font-bold text-slate-700 mb-2 text-sm">登録されているカード一覧</h4>
                                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -625,6 +613,44 @@
                                         className="px-6 py-2 bg-slate-700 text-white font-bold rounded-xl text-sm"
                                     >
                                         閉じる
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* お知らせダイアログ */}
+                    {noticeMessage && (
+                        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
+                            <div className="bg-white p-6 rounded-2xl max-w-sm w-full text-center shadow-xl border-2 border-amber-300">
+                                <p className="text-slate-800 font-bold mb-4">{noticeMessage}</p>
+                                <button
+                                    onClick={() => setNoticeMessage(null)}
+                                    className="px-6 py-2 bg-amber-500 text-white font-bold rounded-xl shadow hover:bg-amber-600"
+                                >
+                                    わかった
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* 確認ダイアログ */}
+                    {confirmDialog && (
+                        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
+                            <div className="bg-white p-6 rounded-2xl max-w-sm w-full text-center shadow-xl border-2 border-slate-300">
+                                <p className="text-slate-800 font-bold mb-6">{confirmDialog.message}</p>
+                                <div className="flex justify-center gap-4">
+                                    <button
+                                        onClick={() => setConfirmDialog(null)}
+                                        className="px-5 py-2 bg-slate-200 text-slate-700 font-bold rounded-xl hover:bg-slate-300"
+                                    >
+                                        やめる
+                                    </button>
+                                    <button
+                                        onClick={confirmDialog.onConfirm}
+                                        className="px-5 py-2 bg-red-600 text-white font-bold rounded-xl shadow hover:bg-red-700"
+                                    >
+                                        けす
                                     </button>
                                 </div>
                             </div>
